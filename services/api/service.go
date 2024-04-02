@@ -66,6 +66,9 @@ var (
 	pathGetHeader         = "/eth/v1/builder/header/{slot:[0-9]+}/{parent_hash:0x[a-fA-F0-9]+}/{pubkey:0x[a-fA-F0-9]+}"
 	pathGetPayload        = "/eth/v1/builder/blinded_blocks"
 
+	// PROF API
+	pathPROFSubmitBundle = "/relay/v1/prof/bundle"
+
 	// Block builder API
 	pathBuilderGetValidators = "/relay/v1/builder/validators"
 	pathSubmitNewBlock       = "/relay/v1/builder/blocks"
@@ -134,6 +137,7 @@ type RelayAPIOpts struct {
 	DataAPI         bool
 	PprofAPI        bool
 	InternalAPI     bool
+	PROFAPI         bool
 }
 
 type payloadAttributesHelper struct {
@@ -340,6 +344,11 @@ func (api *RelayAPI) getRouter() http.Handler {
 		r.HandleFunc(pathRegisterValidator, api.handleRegisterValidator).Methods(http.MethodPost)
 		r.HandleFunc(pathGetHeader, api.handleGetHeader).Methods(http.MethodGet)
 		r.HandleFunc(pathGetPayload, api.handleGetPayload).Methods(http.MethodPost)
+	}
+
+	if api.opts.PROFAPI {
+		api.log.Info("PROF API enabled")
+		r.HandleFunc(pathPROFSubmitBundle, api.handlePROFSubmitBundle).Methods(http.MethodGet)
 	}
 
 	// Builder API
@@ -1208,12 +1217,20 @@ func (api *RelayAPI) handleGetHeader(w http.ResponseWriter, req *http.Request) {
 		w.WriteHeader(http.StatusNoContent)
 		return
 	}
-
+	log.Info("augmenting prof bundle")
+	log.Info("before PROF", value)
+	augmentedValue := api.getProfAugmentedValue(value)
+	log.Info("after PROF", value)
 	log.WithFields(logrus.Fields{
-		"value":     value.String(),
+		"value":     augmentedValue.String(),
 		"blockHash": blockHash.String(),
 	}).Info("bid delivered")
 	api.RespondOK(w, bid)
+}
+
+func (api *RelayAPI) getProfAugmentedValue(value *uint256.Int) *uint256.Int {
+	// TODO STUB
+	return value.Add(value, uint256.NewInt(123_456))
 }
 
 func (api *RelayAPI) checkProposerSignature(block *common.VersionedSignedBlindedBeaconBlock, pubKey []byte) (bool, error) {
@@ -1579,6 +1596,16 @@ func (api *RelayAPI) handleGetPayload(w http.ResponseWriter, req *http.Request) 
 		})
 	}
 	log.Info("execution payload delivered")
+}
+
+// --------------------
+//
+// PROF APIs
+//
+// --------------------
+
+func (api *RelayAPI) handlePROFSubmitBundle(w http.ResponseWriter, req *http.Request) {
+	// TODO STUB
 }
 
 // --------------------

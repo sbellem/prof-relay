@@ -31,6 +31,7 @@ var (
 	apiDefaultBuilderAPIEnabled  = os.Getenv("DISABLE_BUILDER_API") != "1"
 	apiDefaultDataAPIEnabled     = os.Getenv("DISABLE_DATA_API") != "1"
 	apiDefaultProposerAPIEnabled = os.Getenv("DISABLE_PROPOSER_API") != "1"
+	apiDefaultPROFAPIEnabled     = os.Getenv("DISABLE_PROF_API") != "1"
 
 	apiListenAddr   string
 	apiPprofEnabled bool
@@ -42,6 +43,7 @@ var (
 	apiInternalAPI  bool
 	apiProposerAPI  bool
 	apiLogTag       string
+	apiPROFAPI      bool
 )
 
 func init() {
@@ -67,6 +69,7 @@ func init() {
 	apiCmd.Flags().BoolVar(&apiDataAPI, "data-api", apiDefaultDataAPIEnabled, "enable data API (/data/...)")
 	apiCmd.Flags().BoolVar(&apiInternalAPI, "internal-api", apiDefaultInternalAPIEnabled, "enable internal API (/internal/...)")
 	apiCmd.Flags().BoolVar(&apiProposerAPI, "proposer-api", apiDefaultProposerAPIEnabled, "enable proposer API (/proposer/...)")
+	apiCmd.Flags().BoolVar(&apiPROFAPI, "PROF-api", apiDefaultPROFAPIEnabled, "enable PROF API (/prof/...)")
 }
 
 var apiCmd = &cobra.Command{
@@ -159,6 +162,7 @@ var apiCmd = &cobra.Command{
 			DataAPI:         apiDataAPI,
 			InternalAPI:     apiInternalAPI,
 			ProposerAPI:     apiProposerAPI,
+			PROFAPI:         apiPROFAPI,
 			PprofAPI:        apiPprofEnabled,
 		}
 
