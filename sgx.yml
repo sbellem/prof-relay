@@ -1,0 +1,44 @@
+version: '3'
+
+services:
+  aesmd:
+    image: ghcr.io/initc3/sgx-aesm:2.19-buster
+    volumes:
+      - aesmd-socket:/var/run/aesmd
+    devices:
+      # NOTE in-kernel driver
+      #- /dev/sgx_enclave
+      #- /dev/sgx_provision
+      # NOTE out-of-tree driver
+      - /dev/isgx
+  mev-boost-relay:
+    image: mev-boost-relay:sgx
+    build:
+      context: .
+      dockerfile: sgx.Dockerfile
+      target: deploy
+      secrets:
+        - signingkey
+    depends_on:
+      aesmd:
+        condition: service_started
+    volumes:
+      - aesmd-socket:/var/run/aesmd
+    devices:
+      # NOTE in-kernel driver
+      #- /dev/sgx_enclave
+      #- /dev/sgx_provision
+      # NOTE out-of-tree driver
+      - /dev/isgx
+
+volumes:
+  aesmd-socket:
+    driver: local
+    driver_opts:
+      type: "tmpfs"
+      device: "tmpfs"
+      o: "rw"
+
+secrets:
+  signingkey:
+    file: ./private.pem
