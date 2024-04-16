@@ -5,6 +5,7 @@ on:
   push:
     tags:
       - 'v*'
+    branches: [ main ]
 
 env:
   REGISTRY: ghcr.io
@@ -81,6 +82,7 @@ jobs:
 
   github-release:
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/tags/v*'
     steps:
       - name: Checkout sources
         uses: actions/checkout@v2
