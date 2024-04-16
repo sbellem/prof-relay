@@ -36,7 +36,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.registry }}/sbellem/prof-relay
+          images: ${{ env.REGISTRY }}/sbellem/prof-relay
           tags: |
             type=sha
             type=pep440,pattern={{version}}
